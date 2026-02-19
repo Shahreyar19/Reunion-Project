@@ -1,0 +1,20 @@
+name = "agc-reunion-api"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "agc_reunion"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+[[r2_buckets]]
+binding = "IMAGE_BUCKET"
+bucket_name = "agc-reunion-images"
+
+[vars]
+PUBLIC_R2_BASE = "https://pub-REPLACE.r2.dev"
+ADMIN_USERNAME = "admin"
+
+# Set these with wrangler secret put
+# JWT_SECRET
+# ADMIN_PASSWORD_HASH
