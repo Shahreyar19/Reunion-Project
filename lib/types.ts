@@ -4,6 +4,7 @@ export type GalleryImage = {
   caption: string;
   status: 'pending' | 'approved' | 'rejected';
   created_at: string;
+  user_id?: string;
 };
 
 export type Registration = {
@@ -22,11 +23,4 @@ export type Announcement = {
   title: string;
   message: string;
   created_at: string;
-};
-
-export type EventInfo = {
-  event_date: string;
-  venue: string;
-  map_embed_url: string;
-  about: string;
 };
