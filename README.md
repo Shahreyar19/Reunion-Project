@@ -112,6 +112,25 @@ npm install
 npx wrangler dev
 ```
 
+
+## GitHub Pages (Optional Static Frontend Deployment)
+
+If you want to deploy frontend on `username.github.io/repo`, this repo now includes:
+- static export config in `next.config.mjs`
+- workflow: `.github/workflows/deploy-github-pages.yml`
+
+### Steps
+1. Go to **Repo Settings → Pages**
+2. Source: **GitHub Actions**
+3. In **Settings → Secrets and variables → Actions → Variables**, add:
+   - `NEXT_PUBLIC_API_BASE = https://<your-worker>.workers.dev`
+4. Push to `main` branch
+5. Open `https://<username>.github.io/<repo>/`
+
+### If you only see README text on github.io
+That means GitHub Pages is serving repository content directly (or wrong source), not the Next.js build output.
+Switch Pages source to **GitHub Actions** and run the included deploy workflow.
+
 ## Cloudflare Deployment Guide
 
 ### A) D1 Setup
