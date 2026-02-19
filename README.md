@@ -1,91 +1,80 @@
-# Amla Government College Batch 2020 Reunion Website (Supabase Edition)
+# Reunion (Amla Government College Batch 2020) — Supabase Integrated
 
-A complete reunion platform built with **Next.js + Tailwind CSS** on the frontend and **Supabase (Postgres + Auth + Storage)** on backend services.
+This project is now fully integrated with your Supabase project:
+- **Project name:** Reunion
+- **Project ID:** `tpksfvklhugfvocuyeci`
+- **Project URL:** `https://tpksfvklhugfvocuyeci.supabase.co`
 
-## Tech Stack
-- Frontend: Next.js 14 (App Router)
-- Styling: Tailwind CSS
-- Backend: Supabase (no custom Worker required)
-- Database: Supabase Postgres
-- Storage: Supabase Storage bucket (`reunion-images`)
-- Authentication: Supabase Auth (admin email/password)
-- Hosting: GitHub Pages (static export) or Cloudflare Pages
+## Stack
+- Next.js + Tailwind CSS
+- Supabase Postgres (database)
+- Supabase Auth (admin login)
+- Supabase Storage (`reunion-images`) for photos
+- GitHub Pages / Cloudflare Pages for frontend hosting
 
-## Folder Structure
-```txt
-.
-├── app/
-│   ├── admin/
-│   ├── contact/
-│   ├── gallery/
-│   ├── memory-wall/
-│   ├── register/
-│   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx
-├── components/
-├── lib/
-│   ├── api.ts
-│   ├── auth.ts
-│   ├── constants.ts
-│   ├── supabase.ts
-│   └── types.ts
-├── migrations/
-│   └── 0001_schema.sql
-└── .github/workflows/deploy-github-pages.yml
+## 1) Local Setup
+
+Copy env file:
+```bash
+cp .env.example .env.local
 ```
 
-## Features
-- Hero banner + countdown timer
-- Event details + schedule
-- Reunion registration (QR code generated)
-- Memory wall upload (image + caption)
-- Gallery shows only `approved` images
-- Admin login, dashboard, moderation, announcements, registrations CSV export, event settings
-
-## Environment Variables
-Create `.env.local`:
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
-```
-
-For GitHub Actions deployment, add repo variables:
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-
-## Supabase Setup
-
-### 1) Create project
-- Go to https://supabase.com/dashboard
-- Create new project
-
-### 2) Run SQL schema
-- Open SQL Editor in Supabase
-- Run `migrations/0001_schema.sql`
-
-### 3) Create storage bucket
-- Storage → New bucket → name: `reunion-images`
-- Set bucket to Public
-
-### 4) Create admin user
-- Authentication → Users → Add user
-- Use admin email/password
-- Add custom JWT claim `role=admin` (via auth hook/custom claims) or set equivalent role handling in your project.
-
-## Local Development
+Then install/run:
 ```bash
 npm install
 npm run dev
 ```
 
-## GitHub Pages Deployment
-1. Settings → Pages → Source = GitHub Actions
-2. Add repo variables listed above
-3. Push to `main`
-4. Workflow builds static `out/` and deploys
+> `lib/constants.ts` already contains fallback values for your provided Supabase URL + anon key, so app can run even without env vars.
 
-If you see README on `github.io`, your Pages source is wrong. Set it to **GitHub Actions**.
+## 2) Supabase Database + Storage Setup
 
-## Notes
-- Old Cloudflare Worker files remain in `workers/` for reference, but active app flow now uses Supabase directly from `lib/api.ts`.
+Open Supabase SQL Editor and run:
+- `migrations/0001_schema.sql`
+
+This will:
+- create `registrations`, `gallery_images`, `announcements`, `event_settings`
+- enable RLS policies
+- create storage bucket `reunion-images` (if missing)
+- add storage policies for public read/upload + authenticated management
+
+## 3) Admin Login Setup
+
+1. Supabase Dashboard → Authentication → Users
+2. Create only your admin user (email/password)
+3. Login from `/admin/login` with that email/password
+
+> In this implementation, admin data mutations are allowed for **authenticated users**. So keep only trusted admin user accounts in Auth.
+
+## 4) GitHub Pages Deployment
+
+1. Repo Settings → Pages → Source = **GitHub Actions**
+2. Repo Settings → Secrets and variables → Actions → Variables
+3. Add these repository variables:
+   - `NEXT_PUBLIC_SUPABASE_URL = https://tpksfvklhugfvocuyeci.supabase.co`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY = <your anon key>`
+4. Push to `main`
+5. Workflow `.github/workflows/deploy-github-pages.yml` will build and deploy `out/`
+
+If github.io shows README instead of app, Pages source is not set to GitHub Actions.
+
+## 5) Core Functional Flow
+
+- **Register:** inserts into `registrations` + stores generated QR data URL
+- **Memory Wall upload:** uploads image to Storage, inserts pending record into `gallery_images`
+- **Public gallery:** only reads `status = approved`
+- **Admin gallery:** approve/reject/delete image records
+- **Announcements:** admin create + public read
+- **Event settings:** admin save + public read
+- **Registrations export:** CSV download from admin page
+
+## Project Structure (important)
+
+```txt
+app/                 # public + admin UI
+components/          # shared UI components
+lib/                 # supabase client, app API layer, constants, types
+migrations/          # Supabase SQL schema and policies
+.github/workflows/   # GitHub Pages deployment workflow
+workers/             # legacy files (not used in active runtime)
+```
