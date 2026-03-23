@@ -30,7 +30,8 @@ npm run dev
 ## 2) Supabase Database + Storage Setup
 
 Open Supabase SQL Editor and run:
-- `migrations/0001_schema.sql`
+- `migrations/0001_schema.sql` (existing migration)
+- `sql/reunion_tables.sql` (ready-to-use full table script requested)
 
 This will:
 - create `registrations`, `gallery_images`, `announcements`, `event_settings`
